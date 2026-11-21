@@ -1,0 +1,312 @@
+Date,Crew member,Job number,Job name,Truck,Crew Size,Total Estimated Job Hours,Total Clocked Hours (Day),Work Completed on Schedule,Fleetio AM,Fleetio PM,Late Departure (After 6:30),Job Delay,Repair,Remake,Go Back
+2026-11-02,Doctor Octopus,J-012,Project 012,2025 Double Bucket,2,102.0,9.72,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Doctor Octopus,J-025,Project 025,2025 Double Bucket,1,60.0,9.72,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Electro,J-035,Project 035,2016 Flatbed,2,36.0,9.0,False,0.0,0.0,,,,,
+2026-11-02,Electro,J-080,Project 080,2016 Flatbed,2,0.0,9.0,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Electro,J-092,Project 092,2016 Flatbed,2,0.0,9.0,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Kraven the Hunter,J-012,Project 012,2026 Flatbed,2,102.0,8.58,True,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+2026-11-02,Mysterio,J-035,Project 035,2016 Flatbed,2,36.0,9.73,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Mysterio,J-080,Project 080,2016 Flatbed,2,0.0,9.73,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Mysterio,J-092,Project 092,2016 Flatbed,2,0.0,9.73,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-02,Vulture,J-023,Project 023,2019 Single Bucket,1,12.0,8.63,False,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Doctor Octopus,J-012,Project 012,2025 Double Bucket,2,102.0,9.43,True,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Electro,J-002,Project 002,,2,96.0,8.97,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-03,Electro,J-042,Project 042,2022 Altec Crane,2,18.0,8.97,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Electro,J-042,Project 042,,2,18.0,8.97,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Electro,J-047,Project 047,,1,20.0,8.97,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Electro,J-062,Project 062,,2,96.0,8.97,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-03,Kraven the Hunter,J-012,Project 012,2026 Flatbed,2,102.0,8.88,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Mysterio,J-015,Project 015,2016 Flatbed,1,93.0,7.28,False,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Mysterio,J-059,Project 059,2016 Flatbed,1,11.0,7.28,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Vulture,J-002,Project 002,,2,96.0,9.47,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-03,Vulture,J-026,Project 026,,1,45.0,9.47,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Vulture,J-042,Project 042,,2,18.0,9.47,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Vulture,J-042,Project 042,2019 Single Bucket,2,18.0,9.47,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-03,Vulture,J-062,Project 062,,2,96.0,9.47,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-03,Vulture,J-088,Project 088,,1,0.0,9.47,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-04,Doctor Octopus,J-012,Project 012,2025 Double Bucket,2,102.0,8.28,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-04,Electro,J-040,Project 040,,2,44.0,5.62,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-04,Kraven the Hunter,J-012,Project 012,2026 Flatbed,2,102.0,8.0,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-04,Mysterio,J-040,Project 040,,2,44.0,5.82,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-04,Vulture,J-007,Project 007,,1,57.0,8.1,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-04,Vulture,J-015,Project 015,,1,93.0,8.1,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-04,Vulture,J-058,Project 058,,1,0.0,8.1,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Doctor Octopus,J-001,Project 001,2025 Double Bucket,2,17.0,9.12,True,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Doctor Octopus,J-012,Project 012,2025 Double Bucket,2,102.0,9.12,True,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Electro,J-027,Project 027,2022 Altec Crane,1,30.0,8.63,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Electro,J-044,Project 044,2022 Altec Crane,2,56.0,8.63,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Electro,J-053,Project 053,2022 Altec Crane,2,0.0,8.63,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-05,Kraven the Hunter,J-001,Project 001,2026 Flatbed,2,17.0,8.67,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Kraven the Hunter,J-012,Project 012,2026 Flatbed,2,102.0,8.67,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Mysterio,J-044,Project 044,2023 Single Bucket,2,56.0,8.68,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Mysterio,J-052,Project 052,2023 Single Bucket,1,2.5,8.68,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-05,Mysterio,J-053,Project 053,2023 Single Bucket,2,0.0,8.68,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-05,Vulture,J-039,Project 039,2019 Single Bucket,1,13.0,8.07,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-06,Doctor Octopus,J-004,Project 004,,2,0.0,9.78,True,1.0,1.0,1.0,0.0,0.0,0.0,0.0
+2026-11-06,Doctor Octopus,J-020,Project 020,,1,107.0,9.78,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-06,Electro,J-082,Project 082,,2,25.0,10.25,True,0.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-06,Kraven the Hunter,J-004,Project 004,,2,0.0,8.88,True,1.0,0.0,1.0,0.0,0.0,0.0,0.0
+2026-11-06,Mysterio,J-082,Project 082,,2,25.0,10.22,True,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-06,Vulture,J-075,Project 075,,1,0.0,9.17,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-07,Doctor Octopus,J-036,Project 036,,2,18.0,7.95,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-07,Electro,J-036,Project 036,,2,18.0,7.48,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-09,Doctor Octopus,J-009,Project 009,,2,134.0,12.65,True,1.0,1.0,0.0,1.0,0.0,0.0,0.0
+2026-11-09,Electro,J-008,Project 008,,2,75.0,7.78,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-09,Electro,J-074,Project 074,,2,0.0,7.78,False,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-09,Kraven the Hunter,J-085,Project 085,,1,0.0,12.0,True,1.0,0.0,0.0,1.0,0.0,0.0,0.0
+2026-11-09,Mysterio,J-009,Project 009,,2,134.0,12.75,True,1.0,0.0,0.0,1.0,0.0,0.0,0.0
+2026-11-09,Vulture,J-008,Project 008,,2,75.0,9.55,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-09,Vulture,J-074,Project 074,,2,0.0,9.55,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-10,Doctor Octopus,J-020,Project 020,2018 Altec Crane,2,107.0,15.1,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-10,Doctor Octopus,J-071,Project 071,2018 Altec Crane,2,5.0,15.1,False,1.0,1.0,0.0,0.0,0.0,0.0,1.0
+2026-11-10,Electro,J-077,Project 077,2022 Altec Crane,2,25.5,9.85,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-10,Kraven the Hunter,J-020,Project 020,,2,107.0,14.35,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-10,Kraven the Hunter,J-071,Project 071,,2,5.0,14.35,False,1.0,1.0,0.0,0.0,0.0,0.0,1.0
+2026-11-10,Mysterio,J-009,Project 009,2023 Single Bucket,1,134.0,11.5,True,1.0,0.0,0.0,1.0,0.0,0.0,0.0
+2026-11-10,Vulture,J-077,Project 077,2019 Single Bucket,2,25.5,10.23,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-10,Vulture,J-088,Project 088,,1,0.0,10.23,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-11,Doctor Octopus,J-037,Project 037,2025 Double Bucket,2,32.0,9.83,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-11,Electro,J-061,Project 061,2022 Altec Crane,2,16.0,7.08,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-11,Kraven the Hunter,J-037,Project 037,2025 Double Bucket,2,32.0,9.73,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-11,Mysterio,J-061,Project 061,2022 Altec Crane,2,16.0,7.45,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-11,Vulture,J-004,Project 004,,1,0.0,8.38,True,1.0,0.0,,,,,
+2026-11-11,Vulture,J-024,Project 024,2019 Single Bucket,1,12.5,8.38,False,1.0,0.0,0.0,0.0,0.0,1.0,1.0
+2026-11-11,Vulture,J-068,Project 068,2019 Single Bucket,1,3.5,8.38,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-12,Doctor Octopus,J-030,Project 030,2018 Altec Crane,3,0.0,10.53,True,1.0,0.0,,,,,
+2026-11-12,Doctor Octopus,J-031,Project 031,2018 Altec Crane,3,0.0,10.53,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-12,Electro,J-030,Project 030,2025 Double Bucket,3,0.0,10.0,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-12,Electro,J-031,Project 031,2025 Double Bucket,3,0.0,10.0,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-12,Kraven the Hunter,J-049,Project 049,2019 Single Bucket,2,58.5,8.43,False,0.0,1.0,0.0,1.0,0.0,0.0,1.0
+2026-11-12,Mysterio,J-030,Project 030,2016 Flatbed,3,0.0,10.42,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-12,Mysterio,J-031,Project 031,2016 Flatbed,3,0.0,10.42,True,1.0,0.0,,,,,
+2026-11-12,Vulture,J-049,Project 049,2019 Single Bucket,2,58.5,8.27,False,0.0,0.0,0.0,1.0,0.0,0.0,1.0
+2026-11-13,Doctor Octopus,J-014,Project 014,,2,98.0,7.98,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-13,Doctor Octopus,J-089,Project 089,,2,6.0,7.98,False,1.0,0.0,0.0,0.0,0.0,0.0,1.0
+2026-11-13,Electro,J-090,Project 090,,3,0.0,8.1,True,0.0,0.0,,,,,
+2026-11-13,Kraven the Hunter,J-014,Project 014,,2,98.0,7.23,False,1.0,1.0,0.0,0.0,0.0,0.0,1.0
+2026-11-13,Kraven the Hunter,J-089,Project 089,,2,6.0,7.23,False,1.0,1.0,0.0,0.0,0.0,0.0,1.0
+2026-11-13,Mysterio,J-090,Project 090,,3,0.0,8.43,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-13,Vulture,J-090,Project 090,,3,0.0,8.37,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-14,Electro,J-002,Project 002,,3,96.0,10.42,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-14,Electro,J-062,Project 062,,3,96.0,10.42,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-14,Mysterio,J-002,Project 002,,3,96.0,10.48,True,1.0,0.0,,,,,
+2026-11-14,Mysterio,J-062,Project 062,,3,96.0,10.48,True,1.0,0.0,,,,,
+2026-11-14,Vulture,J-002,Project 002,,3,96.0,10.48,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-14,Vulture,J-062,Project 062,,3,96.0,10.48,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-14,Vulture,J-105,Project 105,,1,0.0,10.48,False,0.0,0.0,,,,,1.0
+2026-11-16,Doctor Octopus,J-056,Project 056,,2,9.0,8.2,True,1.0,1.0,,,,,
+2026-11-16,Electro,J-022,Project 022,,2,18.0,10.05,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-16,Electro,J-047,Project 047,,2,20.0,10.05,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-16,Electro,J-051,Project 051,,2,9.0,10.05,True,1.0,0.0,,1.0,,,0.0
+2026-11-16,Kraven the Hunter,J-056,Project 056,,2,9.0,6.43,True,1.0,1.0,,,,,
+2026-11-16,Mysterio,J-022,Project 022,,2,18.0,10.13,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-16,Mysterio,J-047,Project 047,,2,20.0,10.13,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-16,Mysterio,J-051,Project 051,,2,9.0,10.13,True,1.0,0.0,,1.0,,,0.0
+2026-11-16,Sandman,J-021,Project 021,,2,7.0,6.53,True,0.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-16,Sandman,J-029,Project 029,,2,0.0,6.53,True,0.0,1.0,,,,,
+2026-11-16,Vulture,J-021,Project 021,,2,7.0,7.8,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-16,Vulture,J-029,Project 029,2019 Single Bucket,2,0.0,7.8,True,1.0,1.0,,,,,
+2026-11-17,Doctor Octopus,J-043,Project 043,,3,52.0,8.9,True,1.0,0.0,,,,,
+2026-11-17,Doctor Octopus,J-069,Project 069,,3,32.5,8.9,True,1.0,0.0,,,,,
+2026-11-17,Electro,J-049,Project 049,,2,58.5,8.4,True,1.0,0.0,,,,,
+2026-11-17,Electro,J-102,Project 102,,2,0.0,8.4,False,1.0,0.0,,,,,1.0
+2026-11-17,Kraven the Hunter,J-049,Project 049,,2,58.5,8.03,True,0.0,0.0,,,,,
+2026-11-17,Kraven the Hunter,J-102,Project 102,,2,0.0,8.03,False,0.0,0.0,,,,,1.0
+2026-11-17,Mysterio,J-043,Project 043,,3,52.0,8.02,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-17,Mysterio,J-069,Project 069,,3,32.5,8.02,True,1.0,0.0,,,,,
+2026-11-17,Sandman,J-043,Project 043,,3,52.0,7.67,True,1.0,0.0,,,,,
+2026-11-17,Sandman,J-069,Project 069,,3,32.5,7.67,True,1.0,0.0,,,,,
+2026-11-17,Vulture,J-032,Project 032,,1,0.0,9.18,True,1.0,0.0,,,,,
+2026-11-17,Vulture,J-105,Project 105,2019 Single Bucket,1,0.0,9.18,True,1.0,0.0,,,,,
+2026-11-18,Doctor Octopus,J-014,Project 014,,2,98.0,8.33,True,1.0,0.0,,,,,
+2026-11-18,Doctor Octopus,J-053,Project 053,,2,0.0,8.33,True,1.0,0.0,,,,,
+2026-11-18,Electro,J-014,Project 014,,2,98.0,7.7,True,1.0,0.0,,,,,
+2026-11-18,Electro,J-053,Project 053,,2,0.0,7.7,True,1.0,0.0,,,,,
+2026-11-18,Kraven the Hunter,J-028,Project 028,,2,0.0,6.97,True,0.0,1.0,,,,,
+2026-11-18,Kraven the Hunter,J-054,Project 054,,2,2.0,6.97,False,0.0,1.0,,,,,
+2026-11-18,Mysterio,J-057,Project 057,,1,10.0,2.83,True,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-18,Mysterio,J-081,Project 081,,1,0.0,2.83,True,0.0,0.0,,,,,
+2026-11-18,Sandman,J-028,Project 028,,2,0.0,7.0,True,0.0,0.0,,,,,
+2026-11-18,Sandman,J-054,Project 054,,2,2.0,7.0,False,0.0,0.0,,,,,
+2026-11-18,Vulture,J-018,Project 018,,1,21.0,9.33,True,1.0,0.0,,,,,
+2026-11-18,Vulture,J-032,Project 032,,1,0.0,9.33,True,1.0,0.0,,,,,
+2026-11-19,Doctor Octopus,J-071,Project 071,,2,5.0,7.58,True,1.0,1.0,0.0,0.0,0.0,0.0,0.0
+2026-11-19,Doctor Octopus,J-078,Project 078,,2,2.0,7.58,True,1.0,1.0,,,,,
+2026-11-19,Doctor Octopus,J-096,Project 096,,2,6.0,7.58,True,1.0,1.0,,,,,
+2026-11-19,Doctor Octopus,J-102,Project 102,,2,0.0,7.58,True,1.0,1.0,,,,,
+2026-11-19,Electro,J-013,Project 013,,3,82.0,7.95,True,1.0,0.0,,,,,
+2026-11-19,Kraven the Hunter,J-013,Project 013,,3,82.0,7.93,True,1.0,1.0,,,,0.0,0.0
+2026-11-19,Mysterio,J-071,Project 071,,2,5.0,6.6,True,1.0,0.0,,,,,
+2026-11-19,Mysterio,J-078,Project 078,,2,2.0,6.6,True,1.0,0.0,,,,,
+2026-11-19,Mysterio,J-096,Project 096,,2,6.0,6.6,True,1.0,0.0,,,,,
+2026-11-19,Mysterio,J-102,Project 102,,2,0.0,6.6,True,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-19,Sandman,J-013,Project 013,,3,82.0,8.03,True,1.0,0.0,,,,,
+2026-11-19,Vulture,J-094,Project 094,,1,0.0,8.48,True,1.0,0.0,,,,,
+2026-11-19,Vulture,J-103,Project 103,,1,0.0,8.48,False,1.0,0.0,,,,1.0,1.0
+2026-11-20,Doctor Octopus,J-030,Project 030,,2,0.0,,True,1.0,1.0,,,,,
+2026-11-20,Doctor Octopus,J-060,Project 060,,2,16.0,,False,1.0,1.0,,,,,
+2026-11-20,Doctor Octopus,J-064,Project 064,,4,0.0,,False,1.0,1.0,,,,,
+2026-11-20,Electro,J-064,Project 064,,4,0.0,,False,1.0,0.0,,,,,
+2026-11-20,Electro,J-091,Project 091,,2,16.0,,False,1.0,0.0,,,,,
+2026-11-20,Kraven the Hunter,J-054,Project 054,,1,2.0,,False,1.0,1.0,,,,,
+2026-11-20,Kraven the Hunter,J-093,Project 093,,1,0.0,,False,1.0,1.0,,,,,
+2026-11-20,Kraven the Hunter,J-100,Project 100,,1,7.0,,False,1.0,1.0,,,,,
+2026-11-20,Mysterio,J-030,Project 030,,2,0.0,,True,0.0,0.0,,,,,
+2026-11-20,Mysterio,J-060,Project 060,,2,16.0,,False,0.0,0.0,,,,,
+2026-11-20,Mysterio,J-064,Project 064,,4,0.0,,False,0.0,0.0,,,,,
+2026-11-20,Sandman,J-064,Project 064,,4,0.0,,False,0.0,0.0,,,,,
+2026-11-20,Sandman,J-091,Project 091,,2,16.0,,False,0.0,0.0,,,,,
+2026-11-20,Vulture,J-083,Project 083,2019 Single Bucket,1,0.0,0.0,False,1.0,1.0,,,,,
+2026-11-20,Vulture,J-112,Project 112,2019 Single Bucket,1,0.0,,False,1.0,1.0,,,,,
+2026-11-23,Electro,J-010,Project 010,,3,105.0,0.0,False,0.0,0.0,,,,,
+2026-11-23,Electro,J-034,Project 034,,2,54.0,,False,,,,,,,
+2026-11-23,Electro,J-107,Project 107,,2,1.0,,False,,,,,,,
+2026-11-23,Kraven the Hunter,J-016,Project 016,,3,28.7,0.0,False,0.0,0.0,,,,,
+2026-11-23,Mysterio,J-016,Project 016,,3,28.7,0.0,False,0.0,0.0,,,,,
+2026-11-23,Sandman,J-010,Project 010,,3,105.0,,False,0.0,0.0,,,,,
+2026-11-23,Sandman,J-034,Project 034,,2,54.0,,False,,,,,,,
+2026-11-23,Sandman,J-107,Project 107,,2,1.0,,False,,,,,,,
+2026-11-23,Vulture,J-010,Project 010,,3,105.0,,False,,,,,,,
+2026-11-23,Vulture,J-016,Project 016,,3,28.7,0.0,False,0.0,0.0,,,,,
+2026-11-24,Doctor Octopus,J-010,Project 010,,3,105.0,,False,0.0,0.0,,,,,
+2026-11-24,Doctor Octopus,J-020,Project 020,,3,107.0,,False,,,,,,,
+2026-11-24,Doctor Octopus,J-063,Project 063,,4,7.0,,False,,,,,,,
+2026-11-24,Doctor Octopus,J-101,Project 101,,3,3.5,,False,0.0,0.0,,,,,
+2026-11-24,Doctor Octopus,J-106,Project 106,,4,4.0,,False,,,,,,,
+2026-11-24,Electro,J-010,Project 010,,3,105.0,,False,0.0,0.0,,,,,
+2026-11-24,Electro,J-016,Project 016,,4,28.7,,False,,,,,,,
+2026-11-24,Electro,J-063,Project 063,,4,7.0,,False,0.0,0.0,,,,,
+2026-11-24,Electro,J-101,Project 101,,3,3.5,0.0,False,0.0,0.0,,,,,
+2026-11-24,Electro,J-106,Project 106,,4,4.0,,False,0.0,0.0,,,,,
+2026-11-24,Kraven the Hunter,J-016,Project 016,,4,28.7,0.0,False,0.0,0.0,,,,,
+2026-11-24,Mysterio,J-016,Project 016,,4,28.7,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-24,Sandman,J-020,Project 020,,3,107.0,,False,,,,,,,
+2026-11-24,Sandman,J-063,Project 063,,4,7.0,,False,,,,,,,
+2026-11-24,Sandman,J-106,Project 106,,4,4.0,,False,,,,,,,
+2026-11-24,Vulture,J-010,Project 010,,3,105.0,,False,,,,,,,
+2026-11-24,Vulture,J-016,Project 016,,4,28.7,0.0,False,0.0,0.0,,,,,
+2026-11-24,Vulture,J-020,Project 020,,3,107.0,,False,0.0,0.0,,,,,
+2026-11-24,Vulture,J-063,Project 063,,4,7.0,,False,0.0,0.0,,,,,
+2026-11-24,Vulture,J-101,Project 101,,3,3.5,,False,,,,,,,
+2026-11-24,Vulture,J-106,Project 106,,4,4.0,,False,0.0,0.0,,,,,
+2026-11-25,Doctor Octopus,J-010,Project 010,,3,105.0,0.0,False,0.0,0.0,,,,,
+2026-11-25,Doctor Octopus,J-065,Project 065,,3,12.0,,False,,,,,,,
+2026-11-25,Doctor Octopus,J-084,Project 084,,3,4.0,,False,0.0,0.0,,,,,
+2026-11-25,Kraven the Hunter,J-016,Project 016,,3,28.7,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-25,Mysterio,J-016,Project 016,,3,28.7,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-25,Sandman,J-010,Project 010,,3,105.0,,False,0.0,0.0,,,,,
+2026-11-25,Sandman,J-065,Project 065,,3,12.0,,False,,,,,,,
+2026-11-25,Sandman,J-084,Project 084,,3,4.0,,False,0.0,0.0,,,,,
+2026-11-25,Vulture,J-010,Project 010,,3,105.0,,False,,,,,,,
+2026-11-25,Vulture,J-016,Project 016,,3,28.7,0.0,False,0.0,0.0,,,,,
+2026-11-25,Vulture,J-065,Project 065,,3,12.0,,False,0.0,0.0,,,,,
+2026-11-25,Vulture,J-084,Project 084,2019 Single Bucket,3,4.0,,False,,,,,,,
+2026-11-30,Doctor Octopus,J-025,Project 025,,2,60.0,,False,,,,,,,
+2026-11-30,Electro,J-003,Project 003,,2,101.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-30,Mysterio,J-003,Project 003,,2,101.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-30,Vulture,J-025,Project 025,,2,60.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-11-30,Vulture,J-109,Project 109,2019 Single Bucket,1,0.0,,False,,,,,,,
+2026-12-01,Doctor Octopus,J-033,Project 033,,2,0.0,,False,0.0,0.0,,,,,
+2026-12-01,Doctor Octopus,J-110,Project 110,,1,0.0,,False,0.0,0.0,,,,,
+2026-12-01,Doctor Octopus,J-111,Project 111,,1,0.0,,False,0.0,0.0,,,,,
+2026-12-01,Electro,J-003,Project 003,,2,101.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-01,Mysterio,J-003,Project 003,,2,101.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-01,Sandman,J-033,Project 033,,2,0.0,,False,0.0,0.0,,,,,
+2026-12-01,Vulture,J-097,Project 097,2019 Single Bucket,1,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-01,Vulture,J-104,Project 104,2019 Single Bucket,1,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-02,Doctor Octopus,J-048,Project 048,,1,8.5,,False,,,,,,,
+2026-12-02,Doctor Octopus,J-100,Project 100,,2,7.0,,False,0.0,0.0,,,,,
+2026-12-02,Electro,J-050,Project 050,,1,4.0,,False,0.0,0.0,,,,,
+2026-12-02,Electro,J-108,Project 108,,1,0.0,,False,0.0,0.0,,,,,
+2026-12-02,Sandman,J-100,Project 100,,2,7.0,,False,0.0,0.0,,,,,
+2026-12-02,Vulture,J-072,Project 072,2018 Altec Crane,1,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-02,Vulture,J-073,Project 073,,1,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-02,Vulture,J-076,Project 076,,1,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-03,Doctor Octopus,J-011,Project 011,,3,20.0,,False,0.0,0.0,,,,,
+2026-12-03,Electro,J-011,Project 011,,3,20.0,,False,,,,,,,
+2026-12-03,Kraven the Hunter,J-011,Project 011,,3,20.0,0.0,False,0.0,0.0,,,,,
+2026-12-03,Mysterio,J-045,Project 045,,2,40.0,,False,,,,,,,
+2026-12-03,Sandman,J-045,Project 045,,2,40.0,,False,,,,,,,
+2026-12-03,Vulture,J-072,Project 072,2018 Altec Crane,1,0.0,,False,,,,,,,
+2026-12-03,Vulture,J-073,Project 073,,1,0.0,,False,,,,,,,
+2026-12-03,Vulture,J-076,Project 076,,1,0.0,,False,,,,,,,
+2026-12-04,Doctor Octopus,J-041,Project 041,,2,8.5,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-04,Electro,J-055,Project 055,,2,4.0,0.0,False,0.0,0.0,,,,,
+2026-12-04,Kraven the Hunter,J-055,Project 055,,2,4.0,0.0,False,0.0,0.0,,,,,
+2026-12-04,Mysterio,J-041,Project 041,,2,8.5,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-04,Vulture,J-086,Project 086,2019 Single Bucket,1,0.0,,False,,,,,,,
+2026-12-04,Vulture,J-087,Project 087,2019 Single Bucket,1,0.0,,False,,,,,,,
+2026-12-04,Vulture,J-098,Project 098,2019 Single Bucket,1,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-05,Mysterio,J-033,Project 033,,1,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-07,Doctor Octopus,J-070,Project 070,,2,33.0,,False,,,,,,,
+2026-12-07,Doctor Octopus,J-079,Project 079,,4,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-07,Electro,J-066,Project 066,,3,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-07,Electro,J-070,Project 070,,2,33.0,,False,,,,,,,
+2026-12-07,Kraven the Hunter,J-066,Project 066,,3,0.0,,False,,,,,,,
+2026-12-07,Kraven the Hunter,J-079,Project 079,,4,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-07,Mysterio,J-066,Project 066,,3,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-07,Mysterio,J-079,Project 079,,4,0.0,,False,,,,,,,
+2026-12-07,Sandman,J-079,Project 079,,4,0.0,,False,,,,,,,
+2026-12-08,Doctor Octopus,J-005,Project 005,,3,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-08,Doctor Octopus,J-038,Project 038,,3,18.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-08,Doctor Octopus,J-070,Project 070,,2,33.0,,False,,,,,,,
+2026-12-08,Electro,J-046,Project 046,,2,15.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-08,Electro,J-070,Project 070,,2,33.0,,False,,,,,,,
+2026-12-08,Kraven the Hunter,J-005,Project 005,,3,0.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-08,Kraven the Hunter,J-038,Project 038,,3,18.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-08,Mysterio,J-005,Project 005,,3,0.0,,False,,,,,,,
+2026-12-08,Mysterio,J-038,Project 038,,3,18.0,,False,,,,,,,
+2026-12-08,Mysterio,J-046,Project 046,,2,15.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-09,Doctor Octopus,J-051,Project 051,,2,9.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-09,Electro,J-060,Project 060,,2,16.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-09,Electro,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-09,Kraven the Hunter,J-060,Project 060,,2,16.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-09,Kraven the Hunter,J-064,Project 064,,1,0.0,,False,0.0,0.0,,,,,
+2026-12-09,Mysterio,J-051,Project 051,,2,9.0,0.0,False,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+2026-12-09,Mysterio,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-10,Doctor Octopus,J-019,Project 019,,2,174.0,0.0,False,0.0,0.0,,,,,
+2026-12-10,Electro,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-10,Kraven the Hunter,J-019,Project 019,,2,174.0,0.0,False,0.0,0.0,,,,,
+2026-12-10,Mysterio,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-11,Doctor Octopus,J-019,Project 019,,2,174.0,0.0,False,0.0,0.0,,,,,
+2026-12-11,Electro,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-11,Kraven the Hunter,J-019,Project 019,,2,174.0,0.0,False,0.0,0.0,,,,,
+2026-12-11,Mysterio,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-14,Electro,J-017,Project 017,2022 Altec Crane,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-14,Kraven the Hunter,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-14,Mysterio,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-15,Doctor Octopus,J-006,Project 006,2018 Altec Crane,2,0.0,,False,,,,,,,
+2026-12-15,Electro,J-017,Project 017,2022 Altec Crane,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-15,Kraven the Hunter,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-15,Mysterio,J-006,Project 006,,2,0.0,,False,,,,,,,
+2026-12-15,Mysterio,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-16,Doctor Octopus,J-006,Project 006,2018 Altec Crane,2,0.0,,False,,,,,,,
+2026-12-16,Electro,J-017,Project 017,2022 Altec Crane,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-16,Kraven the Hunter,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-16,Mysterio,J-006,Project 006,,2,0.0,,False,,,,,,,
+2026-12-16,Mysterio,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-17,Doctor Octopus,J-006,Project 006,2018 Altec Crane,2,0.0,,False,,,,,,,
+2026-12-17,Electro,J-017,Project 017,2022 Altec Crane,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-17,Kraven the Hunter,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-17,Mysterio,J-006,Project 006,,2,0.0,,False,,,,,,,
+2026-12-17,Mysterio,J-017,Project 017,,3,0.0,0.0,False,0.0,0.0,,,,,
+2026-12-18,Electro,J-099,Project 099,2022 Altec Crane,2,15.0,,False,,,,,,,
+2026-12-18,Mysterio,J-099,Project 099,,2,15.0,,False,,,,,,,
+2026-12-21,Electro,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-21,Mysterio,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-22,Electro,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-22,Mysterio,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-23,Electro,J-069,Project 069,,2,32.5,,False,,,,,,,
+2026-12-23,Mysterio,J-069,Project 069,,2,32.5,,False,,,,,,,
+2027-01-04,Doctor Octopus,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-04,Doctor Octopus,J-095,Project 095,,2,0.0,,False,,,,,,,
+2027-01-04,Electro,J-095,Project 095,,2,0.0,,False,0.0,0.0,,,,,
+2027-01-04,Mysterio,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-05,Doctor Octopus,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-05,Mysterio,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-06,Doctor Octopus,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-06,Mysterio,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-07,Doctor Octopus,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-07,Mysterio,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-08,Doctor Octopus,J-067,Project 067,,2,360.0,,False,,,,,,,
+2027-01-08,Mysterio,J-067,Project 067,,2,360.0,,False,,,,,,,
