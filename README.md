@@ -8,8 +8,9 @@ The sample data is real install log structure with anonymized names (the crew ar
 - Sidebar filters for date range and crew members, plus adjustable KPI goals
 - KPI cards with performance vs. goal
 - Crew comparison bar charts with goal lines and a leaderboard
-- Estimated vs. actual hours, with sliders to split a day across multiple jobs (drive time included)
-- Weekly trends and an individual crew scorecard
+- Daily review: edit estimated hours and split a crew member's day across jobs with sliders that always total 100%
+- Editable data table with checkbox KPIs
+- An individual crew scorecard
 - Upload your own tracker (.xlsx `Install Log` sheet or .csv) and download filtered data
 
 ## Files

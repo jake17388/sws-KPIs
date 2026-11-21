@@ -8,8 +8,10 @@ import metrics
 
 st.set_page_config(page_title="Install Crew KPI Dashboard", page_icon="🛠️", layout="wide")
 
-if "overrides" not in st.session_state:
-    st.session_state.overrides = {}
+for name, default in [("overrides", {}), ("est_overrides", {}), ("flag_overrides", {}),
+                      ("est_version", 0)]:
+    if name not in st.session_state:
+        st.session_state[name] = default
 
 
 @st.cache_data
@@ -57,11 +59,13 @@ with st.sidebar:
     goal_sched = st.slider("On-schedule goal (%)", 50, 100, 90)
     goal_fleet = st.slider("Fleetio inspection goal (%)", 50, 100, 95)
     goal_eff = st.slider("Hours efficiency goal (%)", 50, 150, 100,
-                         help="Estimated hours ÷ actual hours. Over 100% means faster than estimate.")
+                         help="Per crew member: estimated hours ÷ actual hours. "
+                              "Over 100% means faster than estimate.")
     goal_late = st.number_input("Max late departures", 0, 50, 0)
 
 # ---------------- Data prep ----------------
-log = data.apply_splits(log, st.session_state.overrides)
+log = data.apply_edits(log, st.session_state.overrides, st.session_state.est_overrides,
+                      st.session_state.flag_overrides)
 mask = (log["worked"] & log["crew"].isin(chosen)
         & log["date"].between(pd.Timestamp(start), pd.Timestamp(end)))
 df = log[mask]
@@ -83,8 +87,7 @@ c[0].metric("On-Schedule", pct(team.on_schedule_pct),
             None if pd.isna(team.on_schedule_pct) else f"{team.on_schedule_pct - goal_sched:+.1f} vs goal")
 c[1].metric("Fleetio Inspections", pct(team.fleetio_pct),
             None if pd.isna(team.fleetio_pct) else f"{team.fleetio_pct - goal_fleet:+.1f} vs goal")
-c[2].metric("Hours Efficiency", pct(team.efficiency_pct),
-            None if pd.isna(team.efficiency_pct) else f"{team.efficiency_pct - goal_eff:+.1f} vs goal")
+c[2].metric("Job Delays", int(team.job_delays), delta_color="off")
 c[3].metric("Late Departures", int(team.late_departures),
             f"{int(team.late_departures - goal_late):+d} vs limit", delta_color="inverse")
 c[4].metric("Go Backs / Remakes", int(team.callbacks), delta_color="off")
@@ -92,7 +95,7 @@ c[5].metric("Clocked Hours", f"{team.clocked_hours:,.0f}",
             f"{int(team.days)} crew-days", delta_color="off")
 
 tab_cmp, tab_hours, tab_trend, tab_card, tab_data = st.tabs(
-    ["📊 Crew Comparison", "⏱️ Hours & Day Splits", "📈 Trends", "👤 Crew Scorecard", "🗂️ Data"])
+    ["📊 Crew Comparison", "⏱️ Hours & Estimates", "📈 Trends", "👤 Crew Scorecard", "🗂️ Data"])
 
 # ---------------- Crew comparison ----------------
 with tab_cmp:
@@ -141,87 +144,169 @@ with tab_cmp:
         })
     st.caption("✅ = meets on-schedule and Fleetio goals and the late departure limit.")
 
-# ---------------- Hours & day splits ----------------
+# ---------------- Hours & estimates ----------------
+def rebalance(changed, group):
+    """Keep a crew member's sliders for one day summing to 100%."""
+    ss = st.session_state
+    others = [k for k in group if k != changed]
+    remaining = 100 - ss[f"split::{changed}"]
+    current = [ss.get(f"split::{k}", 0) for k in others]
+    weights = ([c / sum(current) for c in current] if sum(current) > 0
+               else [1 / len(others)] * len(others))
+    raw = [remaining * w for w in weights]
+    ints = [int(r) for r in raw]
+    for i in sorted(range(len(raw)), key=lambda i: raw[i] - ints[i],
+                    reverse=True)[:remaining - sum(ints)]:
+        ints[i] += 1
+    for k, v in zip(others, ints):
+        ss[f"split::{k}"] = v
+    for k in group:
+        ss.overrides[k] = ss[f"split::{k}"]
+
+
+def even_split(n):
+    """Whole-number percentages for n jobs that add up to 100."""
+    base = [100 // n] * n
+    for i in range(100 - sum(base)):
+        base[i] += 1
+    return base
+
+
+def save_inline_estimate(key):
+    st.session_state.est_overrides[key] = st.session_state[f"est::{key}"]
+    st.session_state.est_version += 1
+
+
+def clear_widgets(prefix, keys=None):
+    for k in [k for k in st.session_state if str(k).startswith(prefix)]:
+        if keys is None or k[len(prefix):] in keys:
+            del st.session_state[k]
+
+
 with tab_hours:
-    st.subheader("Estimated vs. actual hours")
-    st.caption("Actual hours = clocked hours × % of day on that job (drive time is included). "
-               "Only jobs with an estimate are compared.")
+    eff = by_crew["efficiency_pct"]
+    st.markdown("**Hours efficiency by crew member** (estimated ÷ actual)")
+    ec = st.columns(len(eff))
+    for col, (name, val) in zip(ec, eff.items()):
+        col.metric(name, pct(val), None if pd.isna(val) else f"{val - goal_eff:+.0f} vs goal")
+
     hrs = (by_crew.reset_index()[["crew", "est_hours", "actual_hours"]]
            .melt("crew", var_name="type", value_name="hours"))
     hrs["type"] = hrs["type"].map({"est_hours": "Estimated", "actual_hours": "Actual"})
     st.altair_chart(
         alt.Chart(hrs).mark_bar().encode(
-            x=alt.X("crew:N", title=None),
+            x=alt.X("crew:N", title=None, axis=alt.Axis(labelAngle=0)),
             xOffset="type:N",
             y=alt.Y("hours:Q", title="Hours"),
             color=alt.Color("type:N", title=None,
                             scale=alt.Scale(range=["#9ca3af", "#2563eb"],
                                             domain=["Estimated", "Actual"])),
             tooltip=["crew", "type", alt.Tooltip("hours:Q", format=".1f")],
-        ).properties(height=320), width="stretch")
+        ).properties(height=280), width="stretch")
 
-    st.subheader("Split a day across jobs")
-    split_days = (df[df["jobs_that_day"] > 1]
-                  .groupby(["crew", "date"]).size().reset_index(name="jobs"))
-    if split_days.empty:
-        st.info("No days with more than one job in this filter.")
-    else:
-        st.caption(f"{len(split_days)} days with more than one job. They default to an even "
-                   "split. Adjust a day below to match how the time was really spent.")
-        labels = [f"{r.crew} · {r.date:%a %b %d} ({r.jobs} jobs)"
-                  for r in split_days.itertuples()]
-        pick = st.selectbox("Crew member and day", range(len(labels)),
-                            format_func=lambda i: labels[i])
-        sel = split_days.iloc[pick]
-        day_rows = df[(df["crew"] == sel.crew) & (df["date"] == sel.date)]
-        keys = day_rows["key"].tolist()
-        clocked = day_rows["clocked_hours"].iloc[0]
+    st.subheader("Daily review")
+    st.caption("Pick a day to see every job by crew member. Correct the estimated hours, and "
+               "when someone worked more than one job, drag the sliders to split their clocked "
+               "hours (drive time included). Each person's sliders always add up to 100%.")
+    days = df.groupby("date")["job_number"].count().sort_index()
+    day = st.selectbox("Date", days.index, index=len(days) - 1,
+                       format_func=lambda d: f"{d:%a %b %d, %Y}  ·  {days[d]} assignments")
+    today = df[df["date"] == day]
 
-        def save_split(keys=keys):
-            vals = [st.session_state[f"split::{k}"] for k in keys[:-1]]
-            total = sum(vals)
-            if total > 100:
-                vals = [v * 100 / total for v in vals]
-            for k, v in zip(keys[:-1], vals):
-                st.session_state.overrides[k] = round(v, 1)
-            st.session_state.overrides[keys[-1]] = round(max(0, 100 - sum(vals)), 1)
+    widths = [3, 1.3, 1.1, 1.1, 1.1, 3.4]
+    for crew_name, rows in today.groupby("crew", sort=True):
+        keys = rows["key"].tolist()
+        clocked = rows["clocked_hours"].iloc[0]
+        with st.container(border=True):
+            st.markdown(f"**{crew_name}** · {clocked:.2f} hrs clocked · "
+                        f"{len(rows)} job{'s' if len(rows) > 1 else ''}")
+            head = st.columns(widths)
+            for col, label in zip(head, ["Job", "Est. hrs ✏️", "Actual hrs", "Efficiency",
+                                         "Truck", "% of day"]):
+                col.caption(label)
+            if len(rows) > 1:
+                start = (even_split(len(keys)) if rows["day_pct"].nunique() == 1
+                         else [int(round(v)) for v in rows["day_pct"]])
+                for k, v in zip(keys, start):
+                    st.session_state.setdefault(f"split::{k}", v)
+            for row in rows.itertuples():
+                c = st.columns(widths, vertical_alignment="center")
+                c[0].write(f"{row.job_name} ({row.job_number})")
+                st.session_state.setdefault(
+                    f"est::{row.key}", float(0 if pd.isna(row.est_hours) else row.est_hours))
+                c[1].number_input("Est. hrs", min_value=0.0, step=0.25,
+                                  format="%.2f", key=f"est::{row.key}",
+                                  label_visibility="collapsed",
+                                  on_change=save_inline_estimate, args=(row.key,))
+                c[2].write(f"{row.actual_hours:.2f}")
+                c[3].write("n/a" if pd.isna(row.est_hours) or not row.actual_hours
+                           else f"{row.est_hours / row.actual_hours * 100:.0f}%")
+                c[4].write(row.truck)
+                if len(rows) > 1:
+                    c[5].slider("% of day", 0, 100, key=f"split::{row.key}",
+                                label_visibility="collapsed", format="%d%%",
+                                on_change=rebalance, args=(row.key, keys))
+                else:
+                    c[5].write("100%")
 
-        st.write(f"**Clocked that day:** {clocked:.2f} hrs")
-        for row in day_rows.iloc[:-1].itertuples():
-            st.slider(f"{row.job_name} ({row.job_number}) - % of day", 0, 100,
-                      int(round(row.day_pct)), step=5, key=f"split::{row.key}",
-                      on_change=save_split)
-        last = day_rows.iloc[-1]
-        st.write(f"**{last.job_name} ({last.job_number})** gets the rest: {last.day_pct:.0f}%")
-        if sum(st.session_state.get(f"split::{k}", 0) for k in keys[:-1]) > 100:
-            st.warning("Sliders add up to more than 100%, so they were scaled down to fit.")
+    b1, b2, b3 = st.columns([1, 1, 2])
+    if b1.button("Reset splits for this day"):
+        day_keys = today["key"].tolist()
+        for k in day_keys:
+            st.session_state.overrides.pop(k, None)
+        clear_widgets("split::", set(day_keys))
+        st.rerun()
+    if b2.button("Reset all splits"):
+        st.session_state.overrides = {}
+        clear_widgets("split::")
+        st.rerun()
+    b3.caption(f"{len(st.session_state.overrides)} job-day splits and "
+               f"{len(st.session_state.est_overrides)} estimates adjusted. Changes last for this "
+               "session. Download from the Data tab to keep them (re-upload keeps them).")
 
-        detail = day_rows[["job_name", "est_hours", "day_pct", "actual_hours"]].copy()
-        detail["efficiency"] = detail["est_hours"] / detail["actual_hours"] * 100
-        st.dataframe(detail, hide_index=True, width="stretch", column_config={
-            "job_name": "Job", "est_hours": st.column_config.NumberColumn("Est. hrs", format="%.2f"),
-            "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
-            "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
-            "efficiency": st.column_config.NumberColumn("Efficiency", format="%.0f%%")})
+    with st.expander("Edit all estimates in a table"):
+        ed_crew = st.selectbox("Show rows for", ["All crew"] + sorted(df["crew"].unique()),
+                               key="ed_crew")
+        view = df if ed_crew == "All crew" else df[df["crew"] == ed_crew]
+        table = view[["key", "date", "crew", "job_name", "est_hours", "clocked_hours",
+                      "day_pct", "actual_hours", "est_edited"]].reset_index(drop=True)
+        table["efficiency"] = (table["est_hours"] / table["actual_hours"] * 100).round(0)
+        editor_key = f"est_editor_{st.session_state.est_version}"
 
-        b1, b2 = st.columns(2)
-        if b1.button("Reset this day to even split"):
-            for k in keys:
-                st.session_state.overrides.pop(k, None)
-                st.session_state.pop(f"split::{k}", None)
+        def save_estimates(keys=table["key"].tolist(), editor_key=editor_key):
+            changed = []
+            for i, change in st.session_state[editor_key]["edited_rows"].items():
+                if "est_hours" in change:
+                    st.session_state.est_overrides[keys[int(i)]] = change["est_hours"]
+                    changed.append(keys[int(i)])
+            clear_widgets("est::", set(changed))
+            st.session_state.est_version += 1
+
+        st.data_editor(
+            table, key=editor_key, on_change=save_estimates, hide_index=True, width="stretch",
+            height=380, disabled=[c for c in table.columns if c != "est_hours"],
+            column_config={
+                "key": None,
+                "date": st.column_config.DateColumn("Date", format="ddd MMM D"),
+                "crew": "Crew member", "job_name": "Job",
+                "est_hours": st.column_config.NumberColumn("Est. hrs ✏️", min_value=0, step=0.25,
+                                                           format="%.2f"),
+                "clocked_hours": st.column_config.NumberColumn("Clocked", format="%.2f"),
+                "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
+                "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
+                "est_edited": st.column_config.CheckboxColumn("Edited"),
+                "efficiency": st.column_config.NumberColumn("Efficiency", format="%.0f%%"),
+            })
+        if st.button("Reset all estimates"):
+            st.session_state.est_overrides = {}
+            st.session_state.est_version += 1
+            clear_widgets("est::")
             st.rerun()
-        if b2.button("Reset all splits"):
-            st.session_state.overrides = {}
-            for k in [k for k in st.session_state if str(k).startswith("split::")]:
-                del st.session_state[k]
-            st.rerun()
-        st.caption(f"{len(st.session_state.overrides)} adjusted job-days. Splits last for this "
-                   "session. Download from the Data tab to keep them (re-upload keeps your %).")
 
 # ---------------- Trends ----------------
 with tab_trend:
     wk = metrics.weekly(df)
-    trend = wk.melt("week", ["on_schedule_pct", "fleetio_pct", "efficiency_pct"],
+    trend = wk.melt("week", ["on_schedule_pct", "fleetio_pct"],
                     var_name="kpi", value_name="value").dropna()
     trend["kpi"] = trend["kpi"].map(metrics.KPI_LABELS)
     st.subheader("Weekly team KPIs")
@@ -233,6 +318,18 @@ with tab_trend:
             tooltip=[alt.Tooltip("week:T", format="%b %d"), "kpi",
                      alt.Tooltip("value:Q", format=".1f")],
         ).properties(height=320), width="stretch")
+
+    st.subheader("Weekly hours efficiency by crew member")
+    wk_crew = metrics.weekly(df, per_crew=True).dropna(subset=["efficiency_pct"])
+    eff_line = alt.Chart(wk_crew).mark_line(point=True).encode(
+        x=alt.X("week:T", title="Week of", axis=alt.Axis(format="%b %d")),
+        y=alt.Y("efficiency_pct:Q", title="Efficiency %"),
+        color=alt.Color("crew:N", title="Crew"),
+        tooltip=["crew", alt.Tooltip("week:T", format="%b %d"),
+                 alt.Tooltip("efficiency_pct:Q", format=".0f", title="efficiency %")])
+    goal_rule = alt.Chart(pd.DataFrame({"goal": [goal_eff]})).mark_rule(
+        color="red", strokeDash=[6, 4]).encode(y="goal:Q")
+    st.altair_chart((eff_line + goal_rule).properties(height=320), width="stretch")
 
     st.subheader("Clocked hours by week")
     daily_hrs = (df.groupby(["crew", "date"], as_index=False)["clocked_hours"].max())
@@ -258,8 +355,7 @@ with tab_card:
                 None if pd.isna(me.fleetio_pct) or pd.isna(team.fleetio_pct)
                 else f"{me.fleetio_pct - team.fleetio_pct:+.1f} vs team")
     m[2].metric("Hours Efficiency", pct(me.efficiency_pct),
-                None if pd.isna(me.efficiency_pct) or pd.isna(team.efficiency_pct)
-                else f"{me.efficiency_pct - team.efficiency_pct:+.1f} vs team")
+                None if pd.isna(me.efficiency_pct) else f"{me.efficiency_pct - goal_eff:+.1f} vs goal")
     m[3].metric("Late Departures", int(me.late_departures), delta_color="off")
 
     st.markdown(
@@ -291,17 +387,68 @@ with tab_card:
 # ---------------- Data ----------------
 with tab_data:
     st.subheader("Filtered assignments")
-    st.dataframe(df.drop(columns=["key", "worked"]), hide_index=True, width="stretch")
-    st.download_button("Download filtered data (CSV)", data.export(df),
+    st.caption("Check or uncheck the KPI boxes and correct Est. hrs right in the table. "
+               "Columns marked ✏️ are editable. Every chart and KPI updates with your changes.")
+    flag_labels = {"on_schedule": "On schedule ✏️", "fleetio_am": "Fleetio AM ✏️",
+                   "fleetio_pm": "Fleetio PM ✏️", "late_departure": "Late departure ✏️",
+                   "job_delay": "Job delay ✏️", "repair": "Repair ✏️", "remake": "Remake ✏️",
+                   "go_back": "Go back ✏️"}
+    editable = list(flag_labels) + ["est_hours"]
+    cols = (["key", "date", "crew", "job_name", "est_hours", "clocked_hours", "day_pct",
+             "actual_hours"] + list(flag_labels)
+            + ["job_number", "truck", "crew_size", "est_job_hours", "jobs_that_day"])
+    grid = df[cols].reset_index(drop=True)
+    grid_key = f"data_editor_{st.session_state.est_version}"
+
+    def save_grid(keys=grid["key"].tolist(), grid_key=grid_key):
+        changed_est = []
+        for i, change in st.session_state[grid_key]["edited_rows"].items():
+            row_key = keys[int(i)]
+            for col, value in change.items():
+                if col == "est_hours":
+                    st.session_state.est_overrides[row_key] = value
+                    changed_est.append(row_key)
+                elif col in flag_labels:
+                    st.session_state.flag_overrides[(row_key, col)] = bool(value)
+        clear_widgets("est::", set(changed_est))
+        st.session_state.est_version += 1
+
+    st.data_editor(
+        grid, key=grid_key, on_change=save_grid, hide_index=True, width="stretch", height=460,
+        disabled=[c for c in grid.columns if c not in editable],
+        column_config={
+            "key": None,
+            "date": st.column_config.DateColumn("Date", format="ddd MMM D"),
+            "crew": "Crew member", "job_number": "Job #", "job_name": "Job", "truck": "Truck",
+            "crew_size": "Crew size",
+            "est_job_hours": st.column_config.NumberColumn("Job est. (total)", format="%.0f"),
+            "est_hours": st.column_config.NumberColumn("Est. hrs ✏️", min_value=0, step=0.25,
+                                                       format="%.2f"),
+            "clocked_hours": st.column_config.NumberColumn("Clocked", format="%.2f"),
+            "jobs_that_day": "Jobs that day",
+            "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
+            "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
+            **{c: st.column_config.CheckboxColumn(label) for c, label in flag_labels.items()},
+        })
+
+    d1, d2, d3 = st.columns([1.2, 1, 2])
+    d1.download_button("Download filtered data (CSV)", data.export(df),
                        "crew_kpi_data.csv", "text/csv")
+    if d2.button("Reset checkbox edits"):
+        st.session_state.flag_overrides = {}
+        st.session_state.est_version += 1
+        st.rerun()
+    d3.caption(f"{len(st.session_state.flag_overrides)} checkbox edits, "
+               f"{len(st.session_state.est_overrides)} estimate edits. The download includes "
+               "all your edits, and re-uploading it keeps them.")
     with st.expander("How the numbers are calculated"):
         st.markdown(
             "- **On-Schedule %**: share of assignments marked *Work Completed on Schedule*.\n"
             "- **Fleetio %**: AM + PM inspections done ÷ inspections expected (2 per day worked).\n"
             "- **Estimated hours (per person, per day)**: job estimate ÷ days scheduled on "
-            "the job ÷ crew size.\n"
+            "the job ÷ crew size, unless you edit it.\n"
             "- **Actual hours**: clocked hours × % of day on that job. Days with more than one "
             "job split evenly unless adjusted.\n"
-            "- **Hours Efficiency %**: estimated ÷ actual hours, for jobs that have an estimate. "
-            "Over 100% means faster than estimated.\n"
-            "- Days and late departures count once per person per day.")
+            "- **Hours Efficiency %** (per crew member): estimated ÷ actual hours, for rows "
+            "that have an estimate. Over 100% means faster than estimated.\n"
+            "- Days, Fleetio and late departures count once per person per day.")

@@ -27,7 +27,8 @@ def summarize(df: pd.DataFrame, by=None) -> pd.DataFrame:
     daily = (work.groupby(day_keys, as_index=False)
              .agg(clocked=("clocked_hours", "max"), am=("fleetio_am", "max"),
                   pm=("fleetio_pm", "max"), late=("late_departure", "max")))
-    daily["fleetio_done"] = daily["am"].fillna(0) + daily["pm"].fillna(0)
+    daily["fleetio_done"] = (daily["am"].fillna(0).astype(int)
+                             + daily["pm"].fillna(0).astype(int))
     daily["fleetio_logged"] = np.where(daily["am"].notna() | daily["pm"].notna(), 2, 0)
     day = daily.groupby(keys).agg(
         days=("date", "count"),
@@ -42,7 +43,7 @@ def summarize(df: pd.DataFrame, by=None) -> pd.DataFrame:
     job = work.assign(
         est_used=work["est_hours"].where(with_est),
         act_used=work["actual_hours"].where(with_est),
-        callback=work[["go_back", "remake", "repair"]].sum(axis=1, min_count=1),
+        callback=work[["go_back", "remake", "repair"]].astype(float).sum(axis=1, min_count=1),
     ).groupby(keys).agg(
         assignments=("job_number", "count"),
         jobs=("job_number", "nunique"),
@@ -64,12 +65,6 @@ def summarize(df: pd.DataFrame, by=None) -> pd.DataFrame:
     if isinstance(by, str):
         out.index.name = by
     return out.round(1)
-
-
-def weekly(df: pd.DataFrame, per_crew=False) -> pd.DataFrame:
-    """KPIs by week (week starting Monday), for the team or per crew member."""
-    wk = df.assign(week=df["date"] - pd.to_timedelta(df["date"].dt.weekday, unit="D"))
-    return summarize(wk, by=["week", "crew"] if per_crew else "week").reset_index()
 
 
 def goal_status(value, goal, higher_is_better=True):

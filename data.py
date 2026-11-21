@@ -16,6 +16,7 @@ COLUMNS = {
     "Crew Size": "crew_size",
     "Total Estimated Job Hours": "est_job_hours",
     "Total Clocked Hours (Day)": "clocked_hours",
+    "Est. Hours (Day)": "est_hours_input",
     "Day %": "day_pct",
     "Work Completed on Schedule": "on_schedule",
     "Fleetio AM": "fleetio_am",
@@ -57,9 +58,13 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     df["job_name"] = df["job_name"].fillna(df["job_number"])
     df["truck"] = df["truck"].fillna("Not logged") if "truck" in df else "Not logged"
 
+    # Yes/no KPIs become True/False (blank = not checked)
     for col in FLAG_COLS:
-        df[col] = (pd.to_numeric(df[col], errors="coerce") if col in df
-                   else np.nan)
+        if col in df:
+            vals = df[col].replace({"True": 1, "False": 0, "TRUE": 1, "FALSE": 0})
+            df[col] = pd.to_numeric(vals, errors="coerce").fillna(0).astype(bool)
+        else:
+            df[col] = False
     df["est_job_hours"] = pd.to_numeric(df["est_job_hours"], errors="coerce").fillna(0)
     df["clocked_hours"] = pd.to_numeric(df["clocked_hours"], errors="coerce")
 
@@ -72,6 +77,11 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     job_days = df.groupby("job_number")["date"].transform("nunique")
     est = df["est_job_hours"] / job_days / df["crew_size"].clip(lower=1)
     df["est_hours"] = est.where(df["est_job_hours"] > 0).round(2)
+    # Keep per-row estimates edited earlier (from a re-uploaded export)
+    if "est_hours_input" in df:
+        saved = pd.to_numeric(df["est_hours_input"], errors="coerce")
+        df["est_hours"] = saved.fillna(df["est_hours"])
+        df = df.drop(columns="est_hours_input")
 
     # Worked = has clocked hours (future scheduled rows stay out of KPIs)
     df["worked"] = df["clocked_hours"].fillna(0) > 0
@@ -89,18 +99,28 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     return df.sort_values(["date", "crew", "job_number"]).reset_index(drop=True)
 
 
-def apply_splits(df: pd.DataFrame, overrides: dict) -> pd.DataFrame:
-    """Apply slider overrides to Day % and compute actual hours on each job."""
+def apply_edits(df: pd.DataFrame, overrides: dict, est_overrides: dict,
+                flag_overrides: dict | None = None) -> pd.DataFrame:
+    """Apply Day % splits, edited estimates and edited checkboxes, then compute actual hours."""
     out = df.copy()
+    for (key, col), value in (flag_overrides or {}).items():
+        out.loc[out["key"] == key, col] = bool(value)
     if overrides:
         out["day_pct"] = out["key"].map(overrides).fillna(out["day_pct"])
+    out["est_edited"] = out["key"].isin(est_overrides)
+    if est_overrides:
+        edited = out["est_edited"]
+        out.loc[edited, "est_hours"] = pd.to_numeric(
+            out.loc[edited, "key"].map(est_overrides), errors="coerce")
+    out["est_hours"] = out["est_hours"].where(out["est_hours"] > 0)  # 0 = no estimate
     out["actual_hours"] = (out["clocked_hours"] * out["day_pct"] / 100).round(2)
     return out
 
 
 def export(df: pd.DataFrame) -> str:
-    """CSV in the source column names, including Day %, so it can be re-uploaded."""
+    """CSV in the source column names, with Day % and edited estimates, so it can be re-uploaded."""
     back = {v: k for k, v in COLUMNS.items()}
+    back["est_hours"] = "Est. Hours (Day)"
     cols = [c for c in back if c in df.columns]
     out = df[cols].rename(columns=back)
     out["Date"] = out["Date"].dt.date
