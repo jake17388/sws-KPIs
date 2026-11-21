@@ -94,8 +94,8 @@ c[4].metric("Go Backs / Remakes", int(team.callbacks), delta_color="off")
 c[5].metric("Clocked Hours", f"{team.clocked_hours:,.0f}",
             f"{int(team.days)} crew-days", delta_color="off")
 
-tab_cmp, tab_hours, tab_trend, tab_card, tab_data = st.tabs(
-    ["📊 Crew Comparison", "⏱️ Hours & Estimates", "📈 Trends", "👤 Crew Scorecard", "🗂️ Data"])
+tab_cmp, tab_hours, tab_card, tab_data = st.tabs(
+    ["📊 Crew Comparison", "⏱️ Hours & Estimates", "👤 Crew Scorecard", "🗂️ Data"])
 
 # ---------------- Crew comparison ----------------
 with tab_cmp:
@@ -302,45 +302,6 @@ with tab_hours:
             st.session_state.est_version += 1
             clear_widgets("est::")
             st.rerun()
-
-# ---------------- Trends ----------------
-with tab_trend:
-    wk = metrics.weekly(df)
-    trend = wk.melt("week", ["on_schedule_pct", "fleetio_pct"],
-                    var_name="kpi", value_name="value").dropna()
-    trend["kpi"] = trend["kpi"].map(metrics.KPI_LABELS)
-    st.subheader("Weekly team KPIs")
-    st.altair_chart(
-        alt.Chart(trend).mark_line(point=True).encode(
-            x=alt.X("week:T", title="Week of", axis=alt.Axis(format="%b %d")),
-            y=alt.Y("value:Q", title="%"),
-            color=alt.Color("kpi:N", title=None),
-            tooltip=[alt.Tooltip("week:T", format="%b %d"), "kpi",
-                     alt.Tooltip("value:Q", format=".1f")],
-        ).properties(height=320), width="stretch")
-
-    st.subheader("Weekly hours efficiency by crew member")
-    wk_crew = metrics.weekly(df, per_crew=True).dropna(subset=["efficiency_pct"])
-    eff_line = alt.Chart(wk_crew).mark_line(point=True).encode(
-        x=alt.X("week:T", title="Week of", axis=alt.Axis(format="%b %d")),
-        y=alt.Y("efficiency_pct:Q", title="Efficiency %"),
-        color=alt.Color("crew:N", title="Crew"),
-        tooltip=["crew", alt.Tooltip("week:T", format="%b %d"),
-                 alt.Tooltip("efficiency_pct:Q", format=".0f", title="efficiency %")])
-    goal_rule = alt.Chart(pd.DataFrame({"goal": [goal_eff]})).mark_rule(
-        color="red", strokeDash=[6, 4]).encode(y="goal:Q")
-    st.altair_chart((eff_line + goal_rule).properties(height=320), width="stretch")
-
-    st.subheader("Clocked hours by week")
-    daily_hrs = (df.groupby(["crew", "date"], as_index=False)["clocked_hours"].max())
-    daily_hrs["week"] = daily_hrs["date"] - pd.to_timedelta(daily_hrs["date"].dt.weekday, unit="D")
-    st.altair_chart(
-        alt.Chart(daily_hrs).mark_bar().encode(
-            x=alt.X("week:T", title="Week of", axis=alt.Axis(format="%b %d")),
-            y=alt.Y("sum(clocked_hours):Q", title="Hours"),
-            color=alt.Color("crew:N", title="Crew"),
-            tooltip=["crew", alt.Tooltip("sum(clocked_hours):Q", format=".1f", title="hours")],
-        ).properties(height=300), width="stretch")
 
 # ---------------- Crew scorecard ----------------
 with tab_card:
