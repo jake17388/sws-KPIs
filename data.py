@@ -55,7 +55,8 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     df["job_number"] = df["job_number"].astype(str).str.replace(r"\.0$", "", regex=True)
     if "job_name" not in df:
         df["job_name"] = df["job_number"]
-    df["job_name"] = df["job_name"].fillna(df["job_number"])
+    df["job_name"] = (df["job_name"].fillna(df["job_number"]).astype(str)
+                      .str.replace(r"\.0$", "", regex=True))
     df["truck"] = df["truck"].fillna("Not logged") if "truck" in df else "Not logged"
 
     # Yes/no KPIs become True/False (blank = not checked)

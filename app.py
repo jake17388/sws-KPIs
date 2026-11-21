@@ -231,7 +231,8 @@ with tab_hours:
                     st.session_state.setdefault(f"split::{k}", v)
             for row in rows.itertuples():
                 c = st.columns(widths, vertical_alignment="center")
-                c[0].write(f"{row.job_name} ({row.job_number})")
+                c[0].write(row.job_number if row.job_name == row.job_number
+                           else f"{row.job_name} ({row.job_number})")
                 st.session_state.setdefault(
                     f"est::{row.key}", float(0 if pd.isna(row.est_hours) else row.est_hours))
                 c[1].number_input("Est. hrs", min_value=0.0, step=0.25,
@@ -358,6 +359,8 @@ with tab_data:
     cols = (["key", "date", "crew", "job_name", "est_hours", "clocked_hours", "day_pct",
              "actual_hours"] + list(flag_labels)
             + ["job_number", "truck", "crew_size", "est_job_hours", "jobs_that_day"])
+    if (df["job_name"] == df["job_number"]).all():   # job name is just the number
+        cols.remove("job_number")
     grid = df[cols].reset_index(drop=True)
     grid_key = f"data_editor_{st.session_state.est_version}"
 
