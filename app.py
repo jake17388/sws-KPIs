@@ -4,19 +4,21 @@ import pandas as pd
 import streamlit as st
 
 import data
+import google_sheet
 import metrics
 
 st.set_page_config(page_title="Install Crew KPI Dashboard", page_icon="🛠️", layout="wide")
 
 for name, default in [("overrides", {}), ("est_overrides", {}), ("flag_overrides", {}),
-                      ("est_version", 0)]:
+                      ("notes_overrides", {}), ("est_version", 0)]:
     if name not in st.session_state:
         st.session_state[name] = default
 
 
-@st.cache_data
-def load_sample():
-    return data.clean(data.read_source())
+@st.cache_data(ttl=300)
+def load_google_sheet():
+    raw = google_sheet.read_install_log()
+    return data.clean(raw), google_sheet.percentage_source(raw)
 
 
 def pct(v):
@@ -26,14 +28,15 @@ def pct(v):
 # ---------------- Sidebar ----------------
 with st.sidebar:
     st.header("Data")
-    source = st.radio("Data source", ["Sample data (Sinister Six)", "Upload my tracker"],
+    source = st.radio("Data source", ["Google Sheet (Install Log)", "Upload my tracker"],
                       label_visibility="collapsed")
+    using_google = source == "Google Sheet (Install Log)"
     if source == "Upload my tracker":
         upload = st.file_uploader("Install tracker (.xlsx or .csv)", type=["xlsx", "csv"],
                                   help="Uses the 'Install Log' sheet. Files stay in this "
                                        "session only and are not saved.")
         if upload is None:
-            st.info("Upload a file to continue, or switch back to the sample data.")
+            st.info("Upload a file to continue, or switch back to the Google Sheet.")
             st.stop()
         try:
             log = data.clean(data.read_source(upload))
@@ -41,7 +44,19 @@ with st.sidebar:
             st.error(f"Could not read that file: {e}")
             st.stop()
     else:
-        log = load_sample()
+        try:
+            log, (percentage_header, percentage_letter) = load_google_sheet()
+        except Exception as e:
+            st.error(f"Could not load the Google Sheet: {e}")
+            st.stop()
+        if percentage_header:
+            st.caption(f"Install Log · percentages: {percentage_header} "
+                       f"(column {percentage_letter})")
+        else:
+            st.warning("No Day % column was found; multi-job days will start evenly split.")
+        if st.button("Refresh Google Sheet", width="stretch"):
+            load_google_sheet.clear()
+            st.rerun()
 
     worked_all = log[log["worked"]]
     if worked_all.empty:
@@ -65,7 +80,7 @@ with st.sidebar:
 
 # ---------------- Data prep ----------------
 log = data.apply_edits(log, st.session_state.overrides, st.session_state.est_overrides,
-                      st.session_state.flag_overrides)
+                      st.session_state.flag_overrides, st.session_state.notes_overrides)
 mask = (log["worked"] & log["crew"].isin(chosen)
         & log["date"].between(pd.Timestamp(start), pd.Timestamp(end)))
 df = log[mask]
@@ -263,7 +278,7 @@ with tab_hours:
         st.rerun()
     b3.caption(f"{len(st.session_state.overrides)} job-day splits and "
                f"{len(st.session_state.est_overrides)} estimates adjusted. Changes last for this "
-               "session. Download from the Data tab to keep them (re-upload keeps them).")
+               "session until you save them from the Data tab.")
 
     with st.expander("Edit all estimates in a table"):
         ed_crew = st.selectbox("Show rows for", ["All crew"] + sorted(df["crew"].unique()),
@@ -350,15 +365,16 @@ with tab_card:
 with tab_data:
     st.subheader("Filtered assignments")
     st.caption("Check or uncheck the KPI boxes and correct Est. hrs right in the table. "
-               "Columns marked ✏️ are editable. Every chart and KPI updates with your changes.")
+               "You can also update notes. Every chart and KPI updates with your changes; "
+               "Google Sheet edits are sent only when you click Save below.")
     flag_labels = {"on_schedule": "On schedule ✏️", "fleetio_am": "Fleetio AM ✏️",
                    "fleetio_pm": "Fleetio PM ✏️", "late_departure": "Late departure ✏️",
                    "job_delay": "Job delay ✏️", "repair": "Repair ✏️", "remake": "Remake ✏️",
                    "go_back": "Go back ✏️"}
-    editable = list(flag_labels) + ["est_hours"]
+    editable = list(flag_labels) + ["est_hours", "notes"]
     cols = (["key", "date", "crew", "job_name", "est_hours", "clocked_hours", "day_pct",
              "actual_hours"] + list(flag_labels)
-            + ["job_number", "truck", "crew_size", "est_job_hours", "jobs_that_day"])
+            + ["notes", "job_number", "truck", "crew_size", "est_job_hours", "jobs_that_day"])
     if (df["job_name"] == df["job_number"]).all():   # job name is just the number
         cols.remove("job_number")
     grid = df[cols].reset_index(drop=True)
@@ -374,6 +390,8 @@ with tab_data:
                     changed_est.append(row_key)
                 elif col in flag_labels:
                     st.session_state.flag_overrides[(row_key, col)] = bool(value)
+                elif col == "notes":
+                    st.session_state.notes_overrides[row_key] = value
         clear_widgets("est::", set(changed_est))
         st.session_state.est_version += 1
 
@@ -392,19 +410,55 @@ with tab_data:
             "jobs_that_day": "Jobs that day",
             "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
             "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
+            "notes": st.column_config.TextColumn("Notes ✏️", width="large"),
             **{c: st.column_config.CheckboxColumn(label) for c, label in flag_labels.items()},
         })
+
+    pending = google_sheet.pending_count(
+        st.session_state.overrides, st.session_state.est_overrides,
+        st.session_state.flag_overrides, st.session_state.notes_overrides)
+    if using_google:
+        st.subheader("Google Sheet sync")
+        st.caption("Saves Day % slider changes, estimates, KPI checkboxes, and notes back to "
+                   "the same rows in the Install Log tab.")
+        if st.button(f"Save {pending} change{'s' if pending != 1 else ''} to Google Sheet",
+                     type="primary", disabled=pending == 0):
+            try:
+                credentials = dict(st.secrets["gcp_service_account"])
+            except Exception:
+                st.error("Write access is not configured. Add the gcp_service_account block "
+                         "to Streamlit Secrets and share the sheet with its client_email as Editor.")
+            else:
+                try:
+                    with st.spinner("Saving changes to Install Log..."):
+                        saved = google_sheet.save_edits(
+                            credentials, log, st.session_state.overrides,
+                            st.session_state.est_overrides, st.session_state.flag_overrides,
+                            st.session_state.notes_overrides)
+                except Exception as e:
+                    st.error(f"Could not save changes to Google Sheet: {e}")
+                else:
+                    st.session_state.overrides = {}
+                    st.session_state.est_overrides = {}
+                    st.session_state.flag_overrides = {}
+                    st.session_state.notes_overrides = {}
+                    st.session_state.est_version += 1
+                    load_google_sheet.clear()
+                    st.success(f"Saved {saved} changes to Install Log.")
+                    st.rerun()
 
     d1, d2, d3 = st.columns([1.2, 1, 2])
     d1.download_button("Download filtered data (CSV)", data.export(df),
                        "crew_kpi_data.csv", "text/csv")
     if d2.button("Reset checkbox edits"):
         st.session_state.flag_overrides = {}
+        st.session_state.notes_overrides = {}
         st.session_state.est_version += 1
         st.rerun()
     d3.caption(f"{len(st.session_state.flag_overrides)} checkbox edits, "
-               f"{len(st.session_state.est_overrides)} estimate edits. The download includes "
-               "all your edits, and re-uploading it keeps them.")
+               f"{len(st.session_state.est_overrides)} estimate edits, "
+               f"{len(st.session_state.notes_overrides)} note edits, and "
+               f"{len(st.session_state.overrides)} percentage edits pending.")
     with st.expander("How the numbers are calculated"):
         st.markdown(
             "- **On-Schedule %**: share of assignments marked *Work Completed on Schedule*.\n"

@@ -26,11 +26,80 @@ COLUMNS = {
     "Repair": "repair",
     "Remake": "remake",
     "Go Back": "go_back",
+    "Notes": "notes",
+}
+ALIASES = {
+    "date": ["Date", "Install Date"],
+    "crew": ["Crew member", "Crew Member", "Installer", "Employee"],
+    "job_number": ["Job number", "Job Number", "Job #", "Job"],
+    "job_name": ["Job name", "Job Name", "Project name", "Project Name"],
+    "truck": ["Truck", "Vehicle"],
+    "crew_size": ["Crew Size", "Crew size"],
+    "est_job_hours": ["Total Estimated Job Hours", "Estimated Job Hours"],
+    "clocked_hours": ["Total Clocked Hours (Day)", "Clocked Hours", "Total Clocked Hours"],
+    "est_hours_input": ["Est. Hours (Day)", "Estimated Hours (Day)"],
+    "day_pct": ["Day %", "% of Day", "Percent of Day", "Percentage of Day", "Day Percentage"],
+    "on_schedule": ["Work Completed on Schedule", "On Schedule"],
+    "fleetio_am": ["Fleetio AM"],
+    "fleetio_pm": ["Fleetio PM"],
+    "late_departure": ["Late Departure (After 6:30)", "Late Departure"],
+    "job_delay": ["Job Delay"],
+    "repair": ["Repair"],
+    "remake": ["Remake"],
+    "go_back": ["Go Back", "Go back"],
+    "notes": ["Notes", "Note", "Install Notes", "Comments"],
 }
 REQUIRED = ["Date", "Crew member", "Job number", "Total Estimated Job Hours",
             "Total Clocked Hours (Day)"]
+REQUIRED_INTERNAL = ["date", "crew", "job_number", "est_job_hours", "clocked_hours"]
 FLAG_COLS = ["on_schedule", "fleetio_am", "fleetio_pm", "late_departure",
              "job_delay", "repair", "remake", "go_back"]
+SOURCE_ROW = "_sheet_row"
+
+
+def _normalized_header(value) -> str:
+    return " ".join(str(value).strip().casefold().split())
+
+
+def source_column_map(columns) -> dict[str, str]:
+    """Return internal field -> actual source header, accepting common header variants."""
+    actual = {_normalized_header(column): column for column in columns if column != SOURCE_ROW}
+    mapped = {}
+    for internal, aliases in ALIASES.items():
+        for alias in aliases:
+            if _normalized_header(alias) in actual:
+                mapped[internal] = actual[_normalized_header(alias)]
+                break
+    return mapped
+
+
+def source_column_letter(columns, internal: str) -> str | None:
+    """Return an A1-style column letter for a mapped field."""
+    mapped = source_column_map(columns)
+    if internal not in mapped:
+        return None
+    number = list(columns).index(mapped[internal]) + 1
+    letters = ""
+    while number:
+        number, remainder = divmod(number - 1, 26)
+        letters = chr(65 + remainder) + letters
+    return letters
+
+
+def _percent_series(series: pd.Series) -> pd.Series:
+    """Convert values such as 50%, 50, or numeric 0.5 to percentage points."""
+    text = series.astype("string").str.strip()
+    has_percent = text.str.endswith("%", na=False)
+    values = pd.to_numeric(text.str.rstrip("%").str.replace(",", "", regex=False),
+                           errors="coerce")
+    fractional = ~has_percent & values.between(0, 1, inclusive="both")
+    return values.where(~fractional, values * 100)
+
+
+def _boolean_series(series: pd.Series) -> pd.Series:
+    truthy = {"1", "true", "yes", "y", "x", "checked", "☑", "☒"}
+    return series.map(lambda value: _normalized_header(value) in truthy
+                      if not pd.isna(value) else False).astype(bool)
 
 
 def read_source(file=None) -> pd.DataFrame:
@@ -44,11 +113,18 @@ def read_source(file=None) -> pd.DataFrame:
 
 def clean(raw: pd.DataFrame) -> pd.DataFrame:
     """Standardize columns and compute estimated and actual hours per assignment."""
-    missing = [c for c in REQUIRED if c not in raw.columns]
+    source_columns = list(raw.columns)
+    mapped = source_column_map(source_columns)
+    missing = [internal for internal in REQUIRED_INTERNAL if internal not in mapped]
     if missing:
-        raise ValueError(f"Missing required columns: {', '.join(missing)}")
+        labels = {value: key for key, value in COLUMNS.items()}
+        raise ValueError(f"Missing required columns: {', '.join(labels.get(c, c) for c in missing)}")
 
-    df = raw[[c for c in COLUMNS if c in raw.columns]].rename(columns=COLUMNS)
+    rename = {source: internal for internal, source in mapped.items()}
+    selected = list(rename)
+    if SOURCE_ROW in raw:
+        selected.append(SOURCE_ROW)
+    df = raw[selected].rename(columns=rename)
     df = df.dropna(subset=["date", "crew", "job_number"]).copy()
     df["date"] = pd.to_datetime(df["date"]).dt.normalize()
     df["crew"] = df["crew"].astype(str).str.strip()
@@ -62,10 +138,13 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     # Yes/no KPIs become True/False (blank = not checked)
     for col in FLAG_COLS:
         if col in df:
-            vals = df[col].replace({"True": 1, "False": 0, "TRUE": 1, "FALSE": 0})
-            df[col] = pd.to_numeric(vals, errors="coerce").fillna(0).astype(bool)
+            df[col] = _boolean_series(df[col])
         else:
             df[col] = False
+    if "notes" not in df:
+        df["notes"] = ""
+    else:
+        df["notes"] = df["notes"].fillna("").astype(str)
     df["est_job_hours"] = pd.to_numeric(df["est_job_hours"], errors="coerce").fillna(0)
     df["clocked_hours"] = pd.to_numeric(df["clocked_hours"], errors="coerce")
 
@@ -91,21 +170,29 @@ def clean(raw: pd.DataFrame) -> pd.DataFrame:
     # Default split is even across jobs that day; keep any saved Day % from a re-upload
     default_pct = (100 / df["jobs_that_day"]).round(1)
     if "day_pct" in df:
-        df["day_pct"] = pd.to_numeric(df["day_pct"], errors="coerce").fillna(default_pct)
+        df["day_pct"] = _percent_series(df["day_pct"]).fillna(default_pct).clip(0, 100)
     else:
         df["day_pct"] = default_pct
 
     df["key"] = (df["crew"] + "|" + df["date"].dt.strftime("%Y-%m-%d") + "|"
                  + df["job_number"])
-    return df.sort_values(["date", "crew", "job_number"]).reset_index(drop=True)
+    if SOURCE_ROW in df:
+        df["key"] += "|row-" + df[SOURCE_ROW].astype(int).astype(str)
+    result = df.sort_values(["date", "crew", "job_number"]).reset_index(drop=True)
+    result.attrs["source_columns"] = source_columns
+    result.attrs["source_column_map"] = mapped
+    return result
 
 
 def apply_edits(df: pd.DataFrame, overrides: dict, est_overrides: dict,
-                flag_overrides: dict | None = None) -> pd.DataFrame:
+                flag_overrides: dict | None = None,
+                notes_overrides: dict | None = None) -> pd.DataFrame:
     """Apply Day % splits, edited estimates and edited checkboxes, then compute actual hours."""
     out = df.copy()
     for (key, col), value in (flag_overrides or {}).items():
         out.loc[out["key"] == key, col] = bool(value)
+    for key, value in (notes_overrides or {}).items():
+        out.loc[out["key"] == key, "notes"] = str(value)
     if overrides:
         out["day_pct"] = out["key"].map(overrides).fillna(out["day_pct"])
     out["est_edited"] = out["key"].isin(est_overrides)
