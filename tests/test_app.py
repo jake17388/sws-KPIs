@@ -1,4 +1,5 @@
 import os
+from datetime import date
 from pathlib import Path
 import unittest
 
@@ -16,6 +17,9 @@ class DashboardTests(unittest.TestCase):
             self.assertEqual(len(app.radio), 0)
             self.assertIn("Install Log · percentages: Day Allocation % (column J)",
                           [caption.value for caption in app.caption])
+            self.assertEqual(app.date_input[0].value,
+                             (date(2026, 11, 2), date(2026, 11, 20)))
+            self.assertEqual(app.date_input[0].min, date(2026, 11, 2))
             splits = [slider for slider in app.slider if slider.label == "% of day"]
             splits[0].set_value(40)
             app.run()

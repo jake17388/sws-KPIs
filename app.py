@@ -48,7 +48,9 @@ with st.sidebar:
         st.stop()
 
     st.header("Filters")
-    min_d, max_d = worked_all["date"].min().date(), worked_all["date"].max().date()
+    # Let users select every dated Install Log row, even when clocked hours are blank/zero.
+    # KPI calculations below remain restricted to worked rows.
+    min_d, max_d = log["date"].min().date(), log["date"].max().date()
     picked = st.date_input("Date range", (min_d, max_d), min_value=min_d, max_value=max_d)
     start, end = (picked if len(picked) == 2 else (picked[0], picked[0]))
     crews = sorted(worked_all["crew"].unique())
