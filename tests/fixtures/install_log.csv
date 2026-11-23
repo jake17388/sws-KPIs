@@ -1,0 +1,3 @@
+Day,Date,Crew member,Job number,Job name,Truck,Trailer,Crew Size,Total Estimated Job Hours,Day Allocation %,Estimated Project Hours (Day),Total Clocked Hours (Day),Actual Project Work Hours,Work Completed on Schedule,Fleetio AM,Fleetio PM,Late Departure (After 6:30),Job Delay,Repair,Remake,Go Back,Notes
+Friday,2026-11-20,Test Installer,260001,Lobby,Bucket,,1,16,33.33%,4,8,2.67,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,Started
+Friday,2026-11-20,Test Installer,260002,Exterior,Bucket,,1,24,66.67%,6,8,5.33,FALSE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,TRUE,Return tomorrow

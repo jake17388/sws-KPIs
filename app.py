@@ -28,35 +28,19 @@ def pct(v):
 # ---------------- Sidebar ----------------
 with st.sidebar:
     st.header("Data")
-    source = st.radio("Data source", ["Google Sheet (Install Log)", "Upload my tracker"],
-                      label_visibility="collapsed")
-    using_google = source == "Google Sheet (Install Log)"
-    if source == "Upload my tracker":
-        upload = st.file_uploader("Install tracker (.xlsx or .csv)", type=["xlsx", "csv"],
-                                  help="Uses the 'Install Log' sheet. Files stay in this "
-                                       "session only and are not saved.")
-        if upload is None:
-            st.info("Upload a file to continue, or switch back to the Google Sheet.")
-            st.stop()
-        try:
-            log = data.clean(data.read_source(upload))
-        except Exception as e:
-            st.error(f"Could not read that file: {e}")
-            st.stop()
+    try:
+        log, (percentage_header, percentage_letter) = load_google_sheet()
+    except Exception as e:
+        st.error(f"Could not load the Google Sheet: {e}")
+        st.stop()
+    if percentage_header:
+        st.caption(f"Install Log · percentages: {percentage_header} "
+                   f"(column {percentage_letter})")
     else:
-        try:
-            log, (percentage_header, percentage_letter) = load_google_sheet()
-        except Exception as e:
-            st.error(f"Could not load the Google Sheet: {e}")
-            st.stop()
-        if percentage_header:
-            st.caption(f"Install Log · percentages: {percentage_header} "
-                       f"(column {percentage_letter})")
-        else:
-            st.warning("No Day % column was found; multi-job days will start evenly split.")
-        if st.button("Refresh Google Sheet", width="stretch"):
-            load_google_sheet.clear()
-            st.rerun()
+        st.warning("No Day Allocation % column was found; multi-job days will start evenly split.")
+    if st.button("Refresh Google Sheet", width="stretch"):
+        load_google_sheet.clear()
+        st.rerun()
 
     worked_all = log[log["worked"]]
     if worked_all.empty:
@@ -164,27 +148,32 @@ def rebalance(changed, group):
     """Keep a crew member's sliders for one day summing to 100%."""
     ss = st.session_state
     others = [k for k in group if k != changed]
-    remaining = 100 - ss[f"split::{changed}"]
+    remaining = round(100.0 - ss[f"split::{changed}"], 2)
     current = [ss.get(f"split::{k}", 0) for k in others]
     weights = ([c / sum(current) for c in current] if sum(current) > 0
                else [1 / len(others)] * len(others))
-    raw = [remaining * w for w in weights]
-    ints = [int(r) for r in raw]
-    for i in sorted(range(len(raw)), key=lambda i: raw[i] - ints[i],
-                    reverse=True)[:remaining - sum(ints)]:
-        ints[i] += 1
-    for k, v in zip(others, ints):
+    allocations = [round(remaining * weight, 2) for weight in weights[:-1]]
+    allocations.append(round(remaining - sum(allocations), 2))
+    for k, v in zip(others, allocations):
         ss[f"split::{k}"] = v
     for k in group:
         ss.overrides[k] = ss[f"split::{k}"]
 
 
 def even_split(n):
-    """Whole-number percentages for n jobs that add up to 100."""
-    base = [100 // n] * n
-    for i in range(100 - sum(base)):
-        base[i] += 1
-    return base
+    """Two-decimal percentages for n jobs that add up to exactly 100."""
+    base = [round(100 / n, 2)] * (n - 1)
+    return base + [round(100 - sum(base), 2)]
+
+
+def normalized_split(values):
+    """Preserve sheet allocations while normalizing rounding drift to exactly 100%."""
+    values = [max(0.0, float(value)) for value in values]
+    total = sum(values)
+    if total <= 0:
+        return even_split(len(values))
+    scaled = [round(value * 100 / total, 2) for value in values[:-1]]
+    return scaled + [round(100 - sum(scaled), 2)]
 
 
 def save_inline_estimate(key):
@@ -240,8 +229,7 @@ with tab_hours:
                                          "Truck", "% of day"]):
                 col.caption(label)
             if len(rows) > 1:
-                start = (even_split(len(keys)) if rows["day_pct"].nunique() == 1
-                         else [int(round(v)) for v in rows["day_pct"]])
+                start = normalized_split(rows["day_pct"].tolist())
                 for k, v in zip(keys, start):
                     st.session_state.setdefault(f"split::{k}", v)
             for row in rows.itertuples():
@@ -259,8 +247,9 @@ with tab_hours:
                            else f"{row.est_hours / row.actual_hours * 100:.0f}%")
                 c[4].write(row.truck)
                 if len(rows) > 1:
-                    c[5].slider("% of day", 0, 100, key=f"split::{row.key}",
-                                label_visibility="collapsed", format="%d%%",
+                    c[5].slider("% of day", 0.0, 100.0, step=0.01,
+                                key=f"split::{row.key}",
+                                label_visibility="collapsed", format="%.2f%%",
                                 on_change=rebalance, args=(row.key, keys))
                 else:
                     c[5].write("100%")
@@ -308,7 +297,7 @@ with tab_hours:
                 "est_hours": st.column_config.NumberColumn("Est. hrs ✏️", min_value=0, step=0.25,
                                                            format="%.2f"),
                 "clocked_hours": st.column_config.NumberColumn("Clocked", format="%.2f"),
-                "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
+                "day_pct": st.column_config.NumberColumn("% of day", format="%.2f%%"),
                 "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
                 "est_edited": st.column_config.CheckboxColumn("Edited"),
                 "efficiency": st.column_config.NumberColumn("Efficiency", format="%.0f%%"),
@@ -352,7 +341,7 @@ with tab_card:
             "job_name": "Job", "truck": "Truck",
             "est_hours": st.column_config.NumberColumn("Est. hrs", format="%.2f"),
             "clocked_hours": st.column_config.NumberColumn("Clocked", format="%.2f"),
-            "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
+            "day_pct": st.column_config.NumberColumn("% of day", format="%.2f%%"),
             "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
             "on_schedule": st.column_config.CheckboxColumn("On sched."),
             "fleetio_am": st.column_config.CheckboxColumn("Fleetio AM"),
@@ -408,7 +397,7 @@ with tab_data:
                                                        format="%.2f"),
             "clocked_hours": st.column_config.NumberColumn("Clocked", format="%.2f"),
             "jobs_that_day": "Jobs that day",
-            "day_pct": st.column_config.NumberColumn("% of day", format="%.0f%%"),
+            "day_pct": st.column_config.NumberColumn("% of day", format="%.2f%%"),
             "actual_hours": st.column_config.NumberColumn("Actual hrs", format="%.2f"),
             "notes": st.column_config.TextColumn("Notes ✏️", width="large"),
             **{c: st.column_config.CheckboxColumn(label) for c, label in flag_labels.items()},
@@ -417,35 +406,34 @@ with tab_data:
     pending = google_sheet.pending_count(
         st.session_state.overrides, st.session_state.est_overrides,
         st.session_state.flag_overrides, st.session_state.notes_overrides)
-    if using_google:
-        st.subheader("Google Sheet sync")
-        st.caption("Saves Day % slider changes, estimates, KPI checkboxes, and notes back to "
-                   "the same rows in the Install Log tab.")
-        if st.button(f"Save {pending} change{'s' if pending != 1 else ''} to Google Sheet",
-                     type="primary", disabled=pending == 0):
+    st.subheader("Google Sheet sync")
+    st.caption("Saves Day Allocation % slider changes, estimates, KPI checkboxes, and notes "
+               "back to the same rows in the Install Log tab.")
+    if st.button(f"Save {pending} change{'s' if pending != 1 else ''} to Google Sheet",
+                 type="primary", disabled=pending == 0):
+        try:
+            credentials = dict(st.secrets["gcp_service_account"])
+        except Exception:
+            st.error("Write access is not configured. Add the gcp_service_account block "
+                     "to Streamlit Secrets and share the sheet with its client_email as Editor.")
+        else:
             try:
-                credentials = dict(st.secrets["gcp_service_account"])
-            except Exception:
-                st.error("Write access is not configured. Add the gcp_service_account block "
-                         "to Streamlit Secrets and share the sheet with its client_email as Editor.")
+                with st.spinner("Saving changes to Install Log..."):
+                    saved = google_sheet.save_edits(
+                        credentials, log, st.session_state.overrides,
+                        st.session_state.est_overrides, st.session_state.flag_overrides,
+                        st.session_state.notes_overrides)
+            except Exception as e:
+                st.error(f"Could not save changes to Google Sheet: {e}")
             else:
-                try:
-                    with st.spinner("Saving changes to Install Log..."):
-                        saved = google_sheet.save_edits(
-                            credentials, log, st.session_state.overrides,
-                            st.session_state.est_overrides, st.session_state.flag_overrides,
-                            st.session_state.notes_overrides)
-                except Exception as e:
-                    st.error(f"Could not save changes to Google Sheet: {e}")
-                else:
-                    st.session_state.overrides = {}
-                    st.session_state.est_overrides = {}
-                    st.session_state.flag_overrides = {}
-                    st.session_state.notes_overrides = {}
-                    st.session_state.est_version += 1
-                    load_google_sheet.clear()
-                    st.success(f"Saved {saved} changes to Install Log.")
-                    st.rerun()
+                st.session_state.overrides = {}
+                st.session_state.est_overrides = {}
+                st.session_state.flag_overrides = {}
+                st.session_state.notes_overrides = {}
+                st.session_state.est_version += 1
+                load_google_sheet.clear()
+                st.success(f"Saved {saved} changes to Install Log.")
+                st.rerun()
 
     d1, d2, d3 = st.columns([1.2, 1, 2])
     d1.download_button("Download filtered data (CSV)", data.export(df),

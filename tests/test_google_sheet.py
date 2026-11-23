@@ -7,9 +7,10 @@ import google_sheet
 
 
 HEADERS = [
-    "Date", "Crew member", "Job number", "Job name", "Truck", "Crew Size",
-    "Total Estimated Job Hours", "Est. Hours (Day)", "Total Clocked Hours (Day)",
-    "Day %", "Work Completed on Schedule", "Fleetio AM", "Fleetio PM",
+    "Day", "Date", "Crew member", "Job number", "Job name", "Truck", "Trailer", "Crew Size",
+    "Total Estimated Job Hours", "Day Allocation %", "Estimated Project Hours (Day)",
+    "Total Clocked Hours (Day)", "Actual Project Work Hours",
+    "Work Completed on Schedule", "Fleetio AM", "Fleetio PM",
     "Late Departure (After 6:30)", "Job Delay", "Repair", "Remake", "Go Back", "Notes",
 ]
 
@@ -17,19 +18,19 @@ HEADERS = [
 class GoogleSheetMappingTests(unittest.TestCase):
     def raw(self):
         return pd.DataFrame([
-            ["2026-11-20", "Alex", "260001", "Lobby", "Bucket", 2, 16, 4, 8,
-             "25%", "TRUE", "TRUE", "FALSE", "FALSE", "FALSE", "FALSE", "FALSE",
-             "FALSE", "Started"],
-            ["2026-11-20", "Alex", "260002", "Exterior", "Bucket", 2, 24, 6, 8,
-             "75%", "FALSE", "TRUE", "TRUE", "FALSE", "TRUE", "FALSE", "FALSE",
-             "TRUE", "Return tomorrow"],
+            ["Friday", "2026-11-20", "Alex", "260001", "Lobby", "Bucket", "", 2,
+             16, "25%", 4, 8, 2, "TRUE", "TRUE", "FALSE", "FALSE", "FALSE",
+             "FALSE", "FALSE", "FALSE", "Started"],
+            ["Friday", "2026-11-20", "Alex", "260002", "Exterior", "Bucket", "", 2,
+             24, "75%", 6, 8, 6, "FALSE", "TRUE", "TRUE", "FALSE", "TRUE",
+             "FALSE", "FALSE", "TRUE", "Return tomorrow"],
         ], columns=HEADERS).assign(_sheet_row=[2, 3])
 
     def test_column_j_percentage_is_mapped_and_parsed(self):
         raw = self.raw()
         cleaned = data.clean(raw)
         header, letter = google_sheet.percentage_source(raw)
-        self.assertEqual((header, letter), ("Day %", "J"))
+        self.assertEqual((header, letter), ("Day Allocation %", "J"))
         self.assertEqual(cleaned["day_pct"].tolist(), [25.0, 75.0])
 
     def test_edits_apply_to_metrics_before_sync(self):
@@ -52,8 +53,8 @@ class GoogleSheetMappingTests(unittest.TestCase):
         self.assertEqual(updates, [
             {"range": "J2", "values": [["40%"]]},
             {"range": "J3", "values": [["60%"]]},
-            {"range": "K2", "values": [[True]]},
-            {"range": "S3", "values": [["Done"]]},
+            {"range": "N2", "values": [[True]]},
+            {"range": "V3", "values": [["Done"]]},
         ])
 
     def test_sync_stops_if_sheet_rows_have_moved(self):

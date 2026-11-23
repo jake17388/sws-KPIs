@@ -10,7 +10,7 @@ A Streamlit dashboard for tracking sign install crew performance: on-schedule co
 - Editable data table with checkbox KPIs and notes
 - Save percentage, estimate, checkbox, and note edits back to the exact Google Sheet rows
 - An individual crew scorecard
-- Optional `.xlsx`/`.csv` upload and filtered-data download fallback
+- Filtered-data CSV download
 
 ## Files
 | File | Purpose |
