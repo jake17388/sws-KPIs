@@ -22,7 +22,8 @@ A Streamlit dashboard for tracking sign install crew performance: on-schedule co
 
 ## Google Sheet setup
 
-Public viewer access is enough for the dashboard to read the `Install Log` tab. Writing changes requires a Google Cloud service account:
+Public viewer access is enough for the dashboard to read the `Install Log` tab through its
+direct per-tab CSV export. Writing changes requires a Google Cloud service account:
 
 1. Enable the Google Sheets API in a Google Cloud project and create a service-account key.
 2. Share the Google Sheet with the service account's `client_email` as **Editor**.

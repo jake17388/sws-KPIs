@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from io import StringIO
 import os
-from urllib.parse import quote
+import time
 
 import pandas as pd
 import requests
@@ -12,6 +12,7 @@ import data
 
 SHEET_ID = "1pBYUoM3gxQoSjnrihwcKcTZHqO_BGXiWo3aZnzuat2A"
 WORKSHEET_NAME = "Install Log"
+WORKSHEET_GID = 1604393046
 SHEET_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/edit"
 
 EDITABLE_FIELDS = {
@@ -30,9 +31,9 @@ EDITABLE_FIELDS = {
 
 
 def public_csv_url() -> str:
-    sheet = quote(WORKSHEET_NAME)
-    return (f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq"
-            f"?tqx=out:csv&sheet={sheet}")
+    """Direct CSV export for the Install Log tab, bypassing the gviz query cache."""
+    return (f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export"
+            f"?format=csv&gid={WORKSHEET_GID}&cache_bust={time.time_ns()}")
 
 
 def read_install_log() -> pd.DataFrame:
@@ -41,8 +42,10 @@ def read_install_log() -> pd.DataFrame:
     if local_path:
         raw = pd.read_csv(local_path)
     else:
-        response = requests.get(public_csv_url(), timeout=30,
-                                headers={"User-Agent": "Install-Crew-KPI-Dashboard/1.0"})
+        response = requests.get(
+            public_csv_url(), timeout=30,
+            headers={"User-Agent": "Install-Crew-KPI-Dashboard/1.0",
+                     "Cache-Control": "no-cache", "Pragma": "no-cache"})
         response.raise_for_status()
         raw = pd.read_csv(StringIO(response.text))
     raw[data.SOURCE_ROW] = range(2, len(raw) + 2)

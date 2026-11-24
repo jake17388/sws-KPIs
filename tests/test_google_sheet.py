@@ -33,6 +33,13 @@ class GoogleSheetMappingTests(unittest.TestCase):
         self.assertEqual((header, letter), ("Day Allocation %", "J"))
         self.assertEqual(cleaned["day_pct"].tolist(), [25.0, 75.0])
 
+    def test_public_url_uses_direct_install_log_export(self):
+        url = google_sheet.public_csv_url()
+        self.assertIn("/export?format=csv", url)
+        self.assertIn(f"gid={google_sheet.WORKSHEET_GID}", url)
+        self.assertIn("cache_bust=", url)
+        self.assertNotIn("/gviz/tq", url)
+
     def test_edits_apply_to_metrics_before_sync(self):
         cleaned = data.clean(self.raw())
         keys = cleaned["key"].tolist()
